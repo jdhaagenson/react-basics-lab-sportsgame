@@ -6,11 +6,20 @@ class Team extends React.Component {
       shots: 0,
       score: 0
     }
+    this.shotSound = new Audio('./BackBoard.mp3');
+    this.scoreSound = new Audio('./cheers.wav');
+    this.missedSound = new Audio('./missed.wav');
+    '                                                                                                                                                                                              '
   }
   shotHandler = () => {
     let score = this.state.score
+    this.shotSound.play()
     if (Math.random() > 0.5) {
       score +=1
+
+      setTimeout(() => {
+        this.scoreSound.play()
+      }, 500)
     }
     this.setState((state, props) => ({
       shots: state.shots + 1,
@@ -18,6 +27,15 @@ class Team extends React.Component {
     }))
   }
   render() {
+    let shotPercentageDiv
+    if (this.state.shots) {
+      const shotPercentage = Math.round((this.state.score / this.state.shots)*100)
+      shotPercentageDiv = (
+        <div>
+          <strong>Shooting %:</strong>{shotPercentage}
+        </div>
+      )
+    }
       return (
           <div className="Team">
             <h2>{this.props.name}</h2>
@@ -36,26 +54,56 @@ class Team extends React.Component {
       )
   }
 }
-
+function Game(props) {
+  return (
+    <div className="Game">
+      <h1>Welcome to {props.venue}</h1>
+      <div className="stats">
+        <Team
+          name={props.visitingTeam.name}
+          logo={props.visitingTeam.logoSrc}
+        />
+        <div className="versus">
+          <h1>VS</h1>
+        </div>
+        <Team
+          name={props.homeTeam.name}
+          logo={props.homeTeam.logoSrc}
+        />
+      </div>
+    </div>
+  )
+}
 // Deafault App component that all other compents are rendered through
 function App(props){
+  const raccoons = {
+    name: "Russiaville Raccoons",
+    logoSrc:'./raccoon.png'
+  }
+  const kobras = {
+    name:"California Cobras",
+    logoSrc: './snake.png'
+  }
+  const lions = {
+    name: "Louisiana Lions",
+    logoSrc: './lion-309219_640.png'
+  }
+  const wildcats = {
+    name: "Waco Wildcats",
+    logoSrc: './wildcat-309220_640.png'
+  }
   return (
     <div className="App">
-      <div className="stats">
-      <Team
-        name="Russiaville Raccoons"
-        logo="./raccoon.png"
+      <Game
+        venue="Union 525 Gem"
+        homeTeam={kobras}
+        visitingTeam={raccoons}
       />
-
-      <div className="versus">
-        <h1>VS</h1>
-      </div>
-
-      <Team
-        name="Kingsville Kobras"
-        logo="./snake.png"
+      <Game
+        venue="Sheridan Arena"
+        homeTeam={lions}
+        visitingTeam={wildcats}
       />
-      </div>
     </div>
   )
 }
